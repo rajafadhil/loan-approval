@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Loan Approval Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Loan Approval Prediction</h1>
+        <p>Isi form berikut untuk menghasilkan prediksi persetujuan pinjaman.</p>
+
+        <form method="POST">
+            <label for="occupation_status">Occupation Status:</label>
+            <select id="occupation_status" name="occupation_status" required>
+                <option value="Employed">Employed</option>
+                <option value="Student">Student</option>
+                <option value="Self-Employed">Self-Employed</option>
+            </select>
+
+            <label for="years_employed">Years Employed:</label>
+            <input type="number" step="0.1" id="years_employed" name="years_employed" required>
+
+            <label for="credit_score">Credit Score:</label>
+            <input type="number" id="credit_score" name="credit_score" required>
+
+            <label for="credit_history_years">Credit History Years:</label>
+            <input type="number" step="0.1" id="credit_history_years" name="credit_history_years" required>
+
+            <label for="defaults_on_file">Defaults on File:</label>
+            <select id="defaults_on_file" name="defaults_on_file" required>
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+
+            <label for="delinquencies_last_2yrs">Delinquencies Last 2 Years:</label>
+            <input type="number" id="delinquencies_last_2yrs" name="delinquencies_last_2yrs" required>
+
+            <label for="derogatory_marks">Derogatory Marks:</label>
+            <input type="number" id="derogatory_marks" name="derogatory_marks" required>
+
+            <label for="product_type">Product Type:</label>
+            <select id="product_type" name="product_type" required>
+                <option value="Credit Card">Credit Card</option>
+                <option value="Line of Credit">Line of Credit</option>
+                <option value="Personal Loan">Personal Loan</option>
+            </select>
+
+            <label for="loan_intent">Loan Intent:</label>
+            <select id="loan_intent" name="loan_intent" required>
+                <option value="Business">Business</option>
+                <option value="Home Improvement">Home Improvement</option>
+                <option value="Debt Consolidation">Debt Consolidation</option>
+                <option value="Education">Education</option>
+                <option value="Medical">Medical</option>
+                <option value="Personal">Personal</option>
+            </select>
+
+            <label for="loan_amount">Loan Amount:</label>
+            <input type="number" id="loan_amount" name="loan_amount" required>
+
+            <label for="interest_rate">Interest Rate (%):</label>
+            <input type="number" step="0.01" id="interest_rate" name="interest_rate" required>
+
+            <label for="debt_to_income_ratio">Debt to Income Ratio:</label>
+            <input type="number" step="0.001" id="debt_to_income_ratio" name="debt_to_income_ratio" required>
+
+            <label for="loan_to_income_ratio">Loan to Income Ratio:</label>
+            <input type="number" step="0.001" id="loan_to_income_ratio" name="loan_to_income_ratio" required>
+
+            <label for="payment_to_income_ratio">Payment to Income Ratio:</label>
+            <input type="number" step="0.001" id="payment_to_income_ratio" name="payment_to_income_ratio" required>
+
+            <button type="submit">Predict</button>
+        </form>
+
+        {% if prediction %}
+        <div class="result">
+            <h2>Hasil Prediksi:</h2>
+            <p>{{ prediction }} (Confidence: {{ confidence }})</p>
+        </div>
+        {% endif %}
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
