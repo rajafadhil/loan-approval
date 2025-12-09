@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Hasil Prediksi Pinjaman</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="result-page">
+    <div class="container">
+        <h1>📊 Hasil Prediksi Pinjaman</h1>
+
+        <div class="result-section">
+            {% if prediction == "Approved" %}
+                <div class="success-result">
+                    <h2>✅ Pinjaman Anda DISETUJUI!</h2>
+                    <p>Keyakinan Prediksi: {{ confidence }}</p>
+                </div>
+            {% else %}
+                <div class="error-result">
+                    <h2>❌ Pinjaman Anda DITOLAK</h2>
+                    <p>Keyakinan Prediksi: {{ confidence }}</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="action-buttons">
+            <a href="{{ url_for('predict') }}" class="btn btn-primary">Coba Kembali</a>
+
+            {% if prediction == "Rejected" %}
+                <button onclick="askAI()" class="btn btn-secondary">Tanya AI</button>
+            {% endif %}
+        </div>
+
+        <div id="ai-response" style="display: none;">
+            <h3>🤖 Penjelasan dari AI:</h3>
+            <div id="ai-content"></div>
+        </div>
+    </div>
+
+    <script>
+        const userInputData = JSON.parse('{{ user_input|tojson|safe }}');
+
+        function askAI() {
+            const button = event.target;
+            button.disabled = true;
+            button.textContent = 'Memproses...';
+
+            const data = {
+                prediction: '{{ prediction }}',
+                confidence: '{{ confidence }}',
+                user_input: userInputData
+            };
+
+            fetch('/ask_ai', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.getElementById('ai-response').style.display = 'block';
+                document.getElementById('ai-content').innerHTML = result.response;
+                button.disabled = false;
+                button.textContent = 'Tanya AI';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('ai-response').style.display = 'block';
+                document.getElementById('ai-content').innerHTML = 'Terjadi kesalahan saat menghubungi AI.';
+                button.disabled = false;
+                button.textContent = 'Tanya AI';
+            });
+        }
+    </script>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

@@ -18,7 +18,7 @@
     </nav>
 
     <section id="home" class="hero fade-in-section">
-        <img src="https://via.placeholder.com/800x400/007bff/ffffff?text=Bank+Kuy+Hero+Image" alt="Bank Kuy Hero Image" style="width: 100%; height: auto; margin-bottom: 20px;">
+        <img src="https://ik.imagekit.io/ahmadrajaf/camp3/bank-kuy.png" alt="Bank Kuy Hero Image" style="width: 50%; height: auto; margin-bottom: 20px;">
         <h1>Welcome to Bank Kuy</h1>
         <p>Empowering UMKM with innovative financial solutions</p>
         <button onclick="scrollToSection('about')">Learn More</button>
@@ -28,12 +28,12 @@
         <h2>About Bank Kuy</h2>
         <div class="vision-mission">
             <div class="vision">
-                <img src="https://via.placeholder.com/300x200/28a745/ffffff?text=Vision+Image" alt="Vision Image" style="width: 100%; height: auto; margin-bottom: 10px;">
+                <img src="https://ik.imagekit.io/ahmadrajaf/camp3/bank.png" alt="Vision Image" style="width: 100%; height: auto; margin-bottom: 10px;">
                 <h3>Our Vision</h3>
                 <p>To be the leading bank that empowers UMKM across Indonesia, fostering economic growth and financial inclusion for all.</p>
             </div>
             <div class="mission">
-                <img src="https://via.placeholder.com/300x200/007bff/ffffff?text=Mission+Image" alt="Mission Image" style="width: 100%; height: auto; margin-bottom: 10px;">
+                <img src="https://ik.imagekit.io/ahmadrajaf/camp3/bank.png" alt="Mission Image" style="width: 100%; height: auto; margin-bottom: 10px;">
                 <h3>Our Mission</h3>
                 <p>Provide accessible, innovative, and reliable financial services tailored for UMKM, supporting their growth and success through technology and personalized support.</p>
             </div>
@@ -114,6 +114,13 @@
             // Clear input
             document.getElementById('chatbot-input').value = '';
 
+            // Show responding message
+            addMessage('Sedang merespons...', 'bot responding');
+
+            // Disable input while processing
+            document.getElementById('chatbot-input').disabled = true;
+            document.querySelector('#chatbot-form button').disabled = true;
+
             // Send to server
             fetch('/chatbot', {
                 method: 'POST',
@@ -124,10 +131,20 @@
             })
             .then(response => response.json())
             .then(data => {
+                // Remove responding message
+                removeRespondingMessage();
+                // Add bot response
                 addMessage(data.response, 'bot');
             })
             .catch(error => {
+                // Remove responding message
+                removeRespondingMessage();
                 addMessage('Terjadi error: ' + error.message, 'bot');
+            })
+            .finally(() => {
+                // Re-enable input
+                document.getElementById('chatbot-input').disabled = false;
+                document.querySelector('#chatbot-form button').disabled = false;
             });
         });
 
@@ -138,6 +155,12 @@
             messageDiv.textContent = text;
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function removeRespondingMessage() {
+            const messagesDiv = document.getElementById('chatbot-messages');
+            const respondingMessages = messagesDiv.querySelectorAll('.responding');
+            respondingMessages.forEach(msg => msg.remove());
         }
     </script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>

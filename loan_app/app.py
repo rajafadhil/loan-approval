@@ -13,11 +13,11 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 app = Flask(__name__)
 
 # Load ML artifacts
-model = joblib.load("best_loan_approval_model_reduced.pkl")
-scaler = joblib.load("scaler.pkl")
-encoders = joblib.load("label_encoders.pkl")
+model = joblib.load("loan_app/best_loan_approval_model_reduced.pkl")
+scaler = joblib.load("loan_app/scaler.pkl")
+encoders = joblib.load("loan_app/label_encoders.pkl")
 
-with open("selected_features.txt", "r") as f:
+with open("loan_app/selected_features.txt", "r") as f:
     selected_features = [line.strip() for line in f.readlines() if line.strip()]
 
 SYSTEM_PROMPT = """
@@ -74,7 +74,6 @@ def predict():
         ]
 
         numeric_int_feats = [
-            "annual_income",
             "credit_score",
             "savings_assets",
             "savings_asset",
@@ -145,7 +144,7 @@ def predict():
         prediction = "Approved" if pred == 1 else "Rejected"
         confidence = prob[1] if pred == 1 else prob[0]
 
-        return render_template('predict.html', prediction=prediction, confidence=f"{confidence:.4f}")
+        return render_template('result.html', prediction=prediction, confidence=f"{confidence:.4f}", user_input=user_input)
 
     return render_template('predict.html')
 
@@ -169,6 +168,38 @@ def chatbot():
                 return jsonify({'response': f'Terjadi error: {str(e)}'})
 
     return render_template('chatbot.html')
+
+@app.route('/ask_ai', methods=['POST'])
+def ask_ai():
+    if not hasattr(app, 'llm'):
+        app.llm = load_gemini_model()
+
+    data = request.get_json()
+    prediction = data.get('prediction')
+    confidence = data.get('confidence')
+    user_input = data.get('user_input', {})
+
+    prompt = f"""
+    Berdasarkan data input pengguna berikut dan hasil prediksi yang ditolak, jelaskan secara singkat dan jelas mengapa pengajuan pinjaman ini ditolak.
+
+    Data Input Pengguna:
+    {user_input}
+
+    Hasil Prediksi: Ditolak dengan confidence {confidence}
+
+    Berikan penjelasan berdasarkan faktor-faktor umum dalam penilaian kredit, tanpa memberikan angka pasti atau simulasi model.
+    """
+
+    messages = [
+        SystemMessage(content="Anda adalah asisten keuangan yang menjelaskan alasan penolakan pinjaman berdasarkan data umum."),
+        HumanMessage(content=prompt)
+    ]
+
+    try:
+        response = app.llm.invoke(messages)
+        return jsonify({'response': response.content})
+    except Exception as e:
+        return jsonify({'response': f'Terjadi kesalahan saat menghubungi AI: {str(e)}'})
 
 @app.route('/company')
 def company():

@@ -1,6 +1,5 @@
 occupation_status
 years_employed
-annual_income
 credit_score
 credit_history_years
 defaults_on_file

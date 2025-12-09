@@ -311,12 +311,13 @@ def main():
         st.dataframe(df_model)
         st.stop()
 
-    # 10) TAMPILKAN HASIL
-    st.subheader("🔍 Hasil Prediksi:")
-    if pred == 1:
-        st.success(f"✔ Approved (Confidence: {prob[1]:.4f})")
-    else:
-        st.error(f"❌ Rejected (Confidence: {prob[0]:.4f})")
+    # 10) SIMPAN HASIL DAN NAVIGASI KE HALAMAN RESULT
+    st.session_state.prediction_result = {
+        "pred": pred,
+        "prob": prob,
+        "user_input": user_input
+    }
+    st.switch_page("pages/3_Result.py")
 
 
 if __name__ == "__main__":

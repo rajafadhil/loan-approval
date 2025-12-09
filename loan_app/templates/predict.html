@@ -6,133 +6,142 @@
     <title>📊 Loan Approval Prediction</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
+<body class="predict-page">
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="nav-link">🏠 Home</a>
+        </div>
+    </nav>
     <div class="container">
-        <h1 style="color: white;">📊 Loan Approval Prediction</h1>
+        <h1 style="color: rgb(18, 18, 18);">📊 Loan Approval Prediction</h1>
         <p>Isi form berikut untuk menghasilkan prediksi persetujuan pinjaman.</p>
 
         <form method="POST">
-            <div class="form-group">
-                <label for="occupation_status">Occupation Status:</label>
-                <span class="help-icon" onclick="toggleTooltip(this)">?</span>
-                <div class="tooltip">Pilih status pekerjaan Anda saat ini. Employed: Bekerja tetap, Student: Mahasiswa, Self-Employed: Wiraswasta.</div>
-                <select id="occupation_status" name="occupation_status" required>
-                    <option value="Employed">Employed</option>
-                    <option value="Student">Student</option>
-                    <option value="Self-Employed">Self-Employed</option>
-                </select>
+            <div class="form-section">
+                <h3>Personal Information</h3>
+                <div class="form-group">
+                    <label for="occupation_status">Occupation Status:</label>
+                    <span class="help-icon" onclick="toggleTooltip(this)">?</span>
+                    <div class="tooltip">Pilih status pekerjaan Anda saat ini. Employed: Bekerja tetap, Student: Mahasiswa, Self-Employed: Wiraswasta.</div>
+                    <select id="occupation_status" name="occupation_status" required>
+                        <option value="Employed">Employed</option>
+                        <option value="Student">Student</option>
+                        <option value="Self-Employed">Self-Employed</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="years_employed">Years Employed:</label>
+                    <span class="help-icon" onclick="toggleTooltip(this)">?</span>
+                    <div class="tooltip">Jumlah tahun pengalaman bekerja. Rentang: 0 - 50 tahun.</div>
+                    <input type="number" step="0.1" id="years_employed" name="years_employed" required>
+                </div>
+
+
             </div>
 
-            <div class="form-group">
-                <label for="years_employed">Years Employed:</label>
-                <span class="help-icon" onclick="toggleTooltip(this)">?</span>
-                <div class="tooltip">Jumlah tahun pengalaman bekerja. Rentang: 0 - 50 tahun.</div>
-                <input type="number" step="0.1" id="years_employed" name="years_employed" required>
+            <div class="form-section">
+                <h3>Credit History</h3>
+                <div class="form-group">
+                    <label for="credit_score">Credit Score:</label>
+                    <span class="help-icon" onclick="toggleTooltip(this)">?</span>
+                    <div class="tooltip">Skor kredit Anda dari lembaga kredit. Rentang: 300 - 850.</div>
+                    <input type="number" id="credit_score" name="credit_score" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="credit_history_years">Credit History Years:</label>
+                    <span class="help-icon" onclick="toggleTooltip(this)">?</span>
+                    <div class="tooltip">Lama Anda memiliki riwayat kredit. Rentang: 0 - 50 tahun.</div>
+                    <input type="number" step="0.1" id="credit_history_years" name="credit_history_years" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="defaults_on_file">Defaults on File:</label>
+                    <span class="help-icon" onclick="toggleTooltip(this)">?</span>
+                    <div class="tooltip">Apakah Anda pernah gagal bayar pinjaman sebelumnya? No: Tidak pernah, Yes: Pernah.</div>
+                    <select id="defaults_on_file" name="defaults_on_file" required>
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="delinquencies_last_2yrs">Delinquencies Last 2 Years:</label>
+                    <span class="help-icon" onclick="toggleTooltip(this)">?</span>
+                    <div class="tooltip">Jumlah keterlambatan pembayaran dalam 2 tahun terakhir. Rentang: 0 - 20.</div>
+                    <input type="number" id="delinquencies_last_2yrs" name="delinquencies_last_2yrs" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="derogatory_marks">Derogatory Marks:</label>
+                    <span class="help-icon" onclick="toggleTooltip(this)">?</span>
+                    <div class="tooltip">Jumlah catatan negatif dalam riwayat kredit. Rentang: 0 - 20.</div>
+                    <input type="number" id="derogatory_marks" name="derogatory_marks" required>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="annual_income">Annual Income:</label>
-                <span class="help-icon" onclick="toggleTooltip(this)">?</span>
-                <div class="tooltip">Pendapatan tahunan Anda dalam USD. Rentang: 10000 - 10000000.</div>
-                <input type="number" id="annual_income" name="annual_income" required>
-            </div>
+            <div class="form-section">
+                <h3>Loan Details</h3>
+                <div class="form-group">
+                    <label for="product_type">Product Type:</label>
+                    <span class="help-icon" onclick="toggleTooltip(this)">?</span>
+                    <div class="tooltip">Jenis produk pinjaman yang diminta. Credit Card: Kartu kredit, Line of Credit: Garis kredit, Personal Loan: Pinjaman pribadi.</div>
+                    <select id="product_type" name="product_type" required>
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Line of Credit">Line of Credit</option>
+                        <option value="Personal Loan">Personal Loan</option>
+                    </select>
+                </div>
 
-            <div class="form-group">
-                <label for="credit_score">Credit Score:</label>
-                <span class="help-icon" onclick="toggleTooltip(this)">?</span>
-                <div class="tooltip">Skor kredit Anda dari lembaga kredit. Rentang: 300 - 850.</div>
-                <input type="number" id="credit_score" name="credit_score" required>
-            </div>
+                <div class="form-group">
+                    <label for="loan_intent">Loan Intent:</label>
+                    <span class="help-icon" onclick="toggleTooltip(this)">?</span>
+                    <div class="tooltip">Tujuan penggunaan pinjaman. Business: Bisnis, Home Improvement: Perbaikan rumah, Debt Consolidation: Konsolidasi utang, Education: Pendidikan, Medical: Kesehatan, Personal: Pribadi.</div>
+                    <select id="loan_intent" name="loan_intent" required>
+                        <option value="Business">Business</option>
+                        <option value="Home Improvement">Home Improvement</option>
+                        <option value="Debt Consolidation">Debt Consolidation</option>
+                        <option value="Education">Education</option>
+                        <option value="Medical">Medical</option>
+                        <option value="Personal">Personal</option>
+                    </select>
+                </div>
 
-            <div class="form-group">
-                <label for="credit_history_years">Credit History Years:</label>
-                <span class="help-icon" onclick="toggleTooltip(this)">?</span>
-                <div class="tooltip">Lama Anda memiliki riwayat kredit. Rentang: 0 - 50 tahun.</div>
-                <input type="number" step="0.1" id="credit_history_years" name="credit_history_years" required>
-            </div>
+                <div class="form-group">
+                    <label for="loan_amount">Loan Amount:</label>
+                    <span class="help-icon" onclick="toggleTooltip(this)">?</span>
+                    <div class="tooltip">Jumlah pinjaman yang diminta dalam USD. Rentang: 1000 - 100000.</div>
+                    <input type="number" id="loan_amount" name="loan_amount" required>
+                </div>
 
-            <div class="form-group">
-                <label for="defaults_on_file">Defaults on File:</label>
-                <span class="help-icon" onclick="toggleTooltip(this)">?</span>
-                <div class="tooltip">Apakah Anda pernah gagal bayar pinjaman sebelumnya? No: Tidak pernah, Yes: Pernah.</div>
-                <select id="defaults_on_file" name="defaults_on_file" required>
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
-                </select>
-            </div>
+                <div class="form-group">
+                    <label for="interest_rate">Interest Rate (%):</label>
+                    <span class="help-icon" onclick="toggleTooltip(this)">?</span>
+                    <div class="tooltip">Suku bunga pinjaman dalam persen. Rentang: 0.01 - 30.00.</div>
+                    <input type="number" step="0.01" id="interest_rate" name="interest_rate" required>
+                </div>
 
-            <div class="form-group">
-                <label for="delinquencies_last_2yrs">Delinquencies Last 2 Years:</label>
-                <span class="help-icon" onclick="toggleTooltip(this)">?</span>
-                <div class="tooltip">Jumlah keterlambatan pembayaran dalam 2 tahun terakhir. Rentang: 0 - 20.</div>
-                <input type="number" id="delinquencies_last_2yrs" name="delinquencies_last_2yrs" required>
-            </div>
+                <div class="form-group">
+                    <label for="debt_to_income_ratio">Debt to Income Ratio:</label>
+                    <span class="help-icon" onclick="toggleTooltip(this)">?</span>
+                    <div class="tooltip">Rasio utang terhadap pendapatan. Rentang: 0.001 - 1.000.</div>
+                    <input type="number" step="0.001" id="debt_to_income_ratio" name="debt_to_income_ratio" required>
+                </div>
 
-            <div class="form-group">
-                <label for="derogatory_marks">Derogatory Marks:</label>
-                <span class="help-icon" onclick="toggleTooltip(this)">?</span>
-                <div class="tooltip">Jumlah catatan negatif dalam riwayat kredit. Rentang: 0 - 20.</div>
-                <input type="number" id="derogatory_marks" name="derogatory_marks" required>
-            </div>
+                <div class="form-group">
+                    <label for="loan_to_income_ratio">Loan to Income Ratio:</label>
+                    <span class="help-icon" onclick="toggleTooltip(this)">?</span>
+                    <div class="tooltip">Rasio pinjaman terhadap pendapatan. Rentang: 0.001 - 1.000.</div>
+                    <input type="number" step="0.001" id="loan_to_income_ratio" name="loan_to_income_ratio" required>
+                </div>
 
-            <div class="form-group">
-                <label for="product_type">Product Type:</label>
-                <span class="help-icon" onclick="toggleTooltip(this)">?</span>
-                <div class="tooltip">Jenis produk pinjaman yang diminta. Credit Card: Kartu kredit, Line of Credit: Garis kredit, Personal Loan: Pinjaman pribadi.</div>
-                <select id="product_type" name="product_type" required>
-                    <option value="Credit Card">Credit Card</option>
-                    <option value="Line of Credit">Line of Credit</option>
-                    <option value="Personal Loan">Personal Loan</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="loan_intent">Loan Intent:</label>
-                <span class="help-icon" onclick="toggleTooltip(this)">?</span>
-                <div class="tooltip">Tujuan penggunaan pinjaman. Business: Bisnis, Home Improvement: Perbaikan rumah, Debt Consolidation: Konsolidasi utang, Education: Pendidikan, Medical: Kesehatan, Personal: Pribadi.</div>
-                <select id="loan_intent" name="loan_intent" required>
-                    <option value="Business">Business</option>
-                    <option value="Home Improvement">Home Improvement</option>
-                    <option value="Debt Consolidation">Debt Consolidation</option>
-                    <option value="Education">Education</option>
-                    <option value="Medical">Medical</option>
-                    <option value="Personal">Personal</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="loan_amount">Loan Amount:</label>
-                <span class="help-icon" onclick="toggleTooltip(this)">?</span>
-                <div class="tooltip">Jumlah pinjaman yang diminta dalam USD. Rentang: 1000 - 100000.</div>
-                <input type="number" id="loan_amount" name="loan_amount" required>
-            </div>
-
-            <div class="form-group">
-                <label for="interest_rate">Interest Rate (%):</label>
-                <span class="help-icon" onclick="toggleTooltip(this)">?</span>
-                <div class="tooltip">Suku bunga pinjaman dalam persen. Rentang: 0.01 - 30.00.</div>
-                <input type="number" step="0.01" id="interest_rate" name="interest_rate" required>
-            </div>
-
-            <div class="form-group">
-                <label for="debt_to_income_ratio">Debt to Income Ratio:</label>
-                <span class="help-icon" onclick="toggleTooltip(this)">?</span>
-                <div class="tooltip">Rasio utang terhadap pendapatan. Rentang: 0.001 - 1.000.</div>
-                <input type="number" step="0.001" id="debt_to_income_ratio" name="debt_to_income_ratio" required>
-            </div>
-
-            <div class="form-group">
-                <label for="loan_to_income_ratio">Loan to Income Ratio:</label>
-                <span class="help-icon" onclick="toggleTooltip(this)">?</span>
-                <div class="tooltip">Rasio pinjaman terhadap pendapatan. Rentang: 0.001 - 1.000.</div>
-                <input type="number" step="0.001" id="loan_to_income_ratio" name="loan_to_income_ratio" required>
-            </div>
-
-            <div class="form-group">
-                <label for="payment_to_income_ratio">Payment to Income Ratio:</label>
-                <span class="help-icon" onclick="toggleTooltip(this)">?</span>
-                <div class="tooltip">Rasio pembayaran cicilan terhadap pendapatan. Rentang: 0.001 - 1.000.</div>
-                <input type="number" step="0.001" id="payment_to_income_ratio" name="payment_to_income_ratio" required>
+                <div class="form-group">
+                    <label for="payment_to_income_ratio">Payment to Income Ratio:</label>
+                    <span class="help-icon" onclick="toggleTooltip(this)">?</span>
+                    <div class="tooltip">Rasio pembayaran cicilan terhadap pendapatan. Rentang: 0.001 - 1.000.</div>
+                    <input type="number" step="0.001" id="payment_to_income_ratio" name="payment_to_income_ratio" required>
+                </div>
             </div>
 
             <button type="submit">Predict</button>

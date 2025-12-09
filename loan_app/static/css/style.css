@@ -16,7 +16,7 @@ body {
 }
 
 h1, h2, h3 {
-    color: #007bff;
+    color: #181818;
 }
 
 form {
@@ -209,6 +209,24 @@ button:hover {
     background-color: #2196F3;
     color: white;
     align-self: flex-start;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-width: 80%;
+}
+
+.chatbot-message.responding {
+    background-color: #666;
+    color: #ccc;
+    align-self: flex-start;
+    font-style: italic;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
 }
 
 #chatbot-form {
@@ -390,4 +408,74 @@ nav a:hover {
 
 body {
     margin-top: 70px; /* Adjust for fixed nav */
+}
+
+/* Predict Page Theme */
+.predict-page {
+    background: linear-gradient(135deg, #007bff 0%, #28a745 100%);
+    min-height: 100vh;
+    padding: 20px 0;
+}
+
+.predict-page .container {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.form-section h3 {
+    color: #007bff;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    border-bottom: 2px solid #28a745;
+    padding-bottom: 5px;
+}
+
+/* AI Response Styling */
+.ai-response-content {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 15px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ai-response-content h4 {
+    color: #007bff;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.ai-response-content p {
+    margin-bottom: 15px;
+}
+
+.ai-response-content ul, .ai-response-content ol {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.ai-response-content li {
+    margin-bottom: 5px;
+}
+
+.ai-response-content strong {
+    color: #495057;
+    font-weight: 600;
 }

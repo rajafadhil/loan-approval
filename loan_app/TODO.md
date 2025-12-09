@@ -9,3 +9,16 @@
 - [ ] Verify scroll-based fade-in animations on page sections
 - [ ] Ensure floating chatbot widget functions on company page
 - [ ] Check responsiveness and styling
+
+# TODO: Implement Result Page for Loan Prediction
+
+- [x] Create new page `pages/3_Result.py` to display prediction results (Streamlit version)
+- [x] Add "Coba Kembali" button to return to predict page
+- [x] Add "Tanya AI" button that appears only for rejected predictions
+- [x] Integrate LLM call for "Tanya AI" to explain rejection reasons
+- [x] Modify `pages/1_Predict.py` to store prediction data in session state and navigate to result page
+- [x] Create `templates/result.html` for Flask web app
+- [x] Modify Flask `app.py` to redirect to result page after prediction
+- [x] Add `/ask_ai` endpoint for AJAX LLM calls
+- [x] Fix model file paths in Flask app.py
+- [x] Test Flask app startup and basic functionality
