@@ -1,14 +1,12 @@
 import os
 import streamlit as st
-from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage
 
-load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
 
 if not GOOGLE_API_KEY:
-    st.error("API Key tidak ditemukan! Pastikan ada GOOGLE_API_KEY di file .env")
+    st.error("API Key tidak ditemukan!")
     st.stop()
 
 
@@ -116,7 +114,7 @@ logika keuangan, bukan prediksi model machine learning.
 # Model
 def load_gemini_model():
     return ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         temperature=0,
         max_tokens=None,
         timeout=None,
@@ -160,7 +158,7 @@ def main():
             response = st.session_state.llm.invoke(st.session_state.messages)
 
         except Exception as e:
-            st.error(f"❌ Terjadi error saat memanggil Gemini 2.0 Flash:\n\n{e}")
+            st.error(f"❌ Terjadi error saat memanggil API:\n\n{e}")
             return
 
         # Tampilkan output ke UI
