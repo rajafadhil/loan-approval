@@ -4,21 +4,27 @@ import pandas as pd
 import numpy as np
 import os
 from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import HumanMessage, SystemMessage
+import google.generativeai as genai
 
+# Load environment
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
+if not GOOGLE_API_KEY:
+    raise ValueError("GOOGLE_API_KEY tidak ditemukan! Pastikan file .env berisi kunci API.")
+
+genai.configure(api_key=GOOGLE_API_KEY)
+
 app = Flask(__name__)
 
-# Load ML artifacts
-model = joblib.load("loan_app/best_loan_approval_model_reduced.pkl")
-scaler = joblib.load("loan_app/scaler.pkl")
-encoders = joblib.load("loan_app/label_encoders.pkl")
+# === JANGAN DIUBAH: Bagian model ML ===
+model = joblib.load("best_loan_approval_model_reduced.pkl")
+scaler = joblib.load("scaler.pkl")
+encoders = joblib.load("label_encoders.pkl")
 
-with open("loan_app/selected_features.txt", "r") as f:
+with open("selected_features.txt", "r") as f:
     selected_features = [line.strip() for line in f.readlines() if line.strip()]
+# ===================================
 
 SYSTEM_PROMPT = """
 Anda adalah Asisten Keuangan UMKM, chatbot edukasi keuangan untuk membantu pemahaman simulasi pinjaman.
@@ -38,15 +44,13 @@ Aturan: Jawab logika umum, minta detail jika kurang, netral jika luar domain.
 Persona: Ramah, edukatif, profesional seperti konsultan kredit UMKM.
 """
 
-def load_gemini_model():
-    return ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
-        temperature=0,
-        max_tokens=None,
-        timeout=None,
-        max_retries=2,
-        google_api_key=GOOGLE_API_KEY
+def call_gemini(prompt, system_instruction=SYSTEM_PROMPT):
+    model = genai.GenerativeModel(
+        model_name="gemini-2.0-flash",  # atau "gemini-2.0-flash-exp"
+        system_instruction=system_instruction
     )
+    response = model.generate_content(prompt)
+    return response.text.strip()
 
 @app.route('/')
 def home():
@@ -54,34 +58,22 @@ def home():
 
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
+    # --- Bagian prediksi TIDAK DIUBAH ---
     if request.method == 'POST':
-        # Get form data
         user_input = {}
         for feat in selected_features:
             if feat == "customer_id":
                 continue
             user_input[feat] = request.form.get(feat, '')
 
-        # Process input similar to Streamlit code
         numeric_float_feats = [
-            "years_employed",
-            "credit_history_years",
-            "credit_history years",
-            "interest_rate",
-            "debt_to_income_ratio",
-            "loan_to_income_ratio",
-            "payment_to_income_ratio",
+            "years_employed", "credit_history_years", "credit_history years",
+            "interest_rate", "debt_to_income_ratio", "loan_to_income_ratio", "payment_to_income_ratio"
         ]
 
         numeric_int_feats = [
-            "credit_score",
-            "savings_assets",
-            "savings_asset",
-            "current_debt",
-            "delinquencies_last_2yrs",
-            "derogatory_marks",
-            "loan_amount",
-            "defaults_on_file",
+            "credit_score", "savings_assets", "savings_asset", "current_debt",
+            "delinquencies_last_2yrs", "derogatory_marks", "loan_amount", "defaults_on_file"
         ]
 
         for k in list(user_input.keys()):
@@ -94,22 +86,16 @@ def predict():
 
         if "credit_history years" in df_user.columns and "credit_history_years" in selected_features:
             df_user["credit_history_years"] = df_user["credit_history years"]
-
         if "savings_asset" in df_user.columns and "savings_assets" in selected_features:
             df_user["savings_assets"] = df_user["savings_asset"]
 
         feature_names = getattr(scaler, "feature_names_in_", None)
         if feature_names is None:
-            feature_names = list(
-                dict.fromkeys(
-                    list(df_user.columns) + list(encoders.keys()) + list(selected_features)
-                )
-            )
+            feature_names = list(dict.fromkeys(list(df_user.columns) + list(encoders.keys()) + list(selected_features)))
         else:
             feature_names = list(feature_names)
 
         full_row = {}
-
         for col in feature_names:
             if col in df_user.columns:
                 full_row[col] = df_user[col].iloc[0]
@@ -120,7 +106,6 @@ def predict():
                     full_row[col] = 0.0
 
         df_full = pd.DataFrame([full_row])
-
         for col, encoder in encoders.items():
             if col in df_full.columns:
                 df_full[col] = encoder.transform(df_full[col].astype(str))
@@ -137,7 +122,6 @@ def predict():
             return render_template('predict.html', error=f"Ada fitur yang dibutuhkan model tetapi tidak ada: {missing_cols}")
 
         df_model = df_scaled_full[selected_features]
-
         pred = model.predict(df_model)[0]
         prob = model.predict_proba(df_model)[0]
 
@@ -150,30 +134,18 @@ def predict():
 
 @app.route('/chatbot', methods=['GET', 'POST'])
 def chatbot():
-    if not hasattr(app, 'llm'):
-        app.llm = load_gemini_model()
-    if not hasattr(app, 'messages'):
-        app.messages = [SystemMessage(content=SYSTEM_PROMPT)]
-
     if request.method == 'POST':
         user_message = request.form.get('message')
         if user_message:
-            app.messages.append(HumanMessage(content=user_message))
-
             try:
-                response = app.llm.invoke(app.messages)
-                app.messages.append(response)
-                return jsonify({'response': response.content})
+                response = call_gemini(user_message)
+                return jsonify({'response': response})
             except Exception as e:
                 return jsonify({'response': f'Terjadi error: {str(e)}'})
-
     return render_template('chatbot.html')
 
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
-    if not hasattr(app, 'llm'):
-        app.llm = load_gemini_model()
-
     data = request.get_json()
     prediction = data.get('prediction')
     confidence = data.get('confidence')
@@ -190,14 +162,9 @@ def ask_ai():
     Berikan penjelasan berdasarkan faktor-faktor umum dalam penilaian kredit, tanpa memberikan angka pasti atau simulasi model.
     """
 
-    messages = [
-        SystemMessage(content="Anda adalah asisten keuangan yang menjelaskan alasan penolakan pinjaman berdasarkan data umum."),
-        HumanMessage(content=prompt)
-    ]
-
     try:
-        response = app.llm.invoke(messages)
-        return jsonify({'response': response.content})
+        response = call_gemini(prompt, system_instruction="Anda adalah asisten keuangan yang menjelaskan alasan penolakan pinjaman berdasarkan data umum.")
+        return jsonify({'response': response})
     except Exception as e:
         return jsonify({'response': f'Terjadi kesalahan saat menghubungi AI: {str(e)}'})
 

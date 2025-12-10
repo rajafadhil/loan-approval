@@ -18,7 +18,6 @@
     </nav>
 
     <section id="home" class="hero fade-in-section">
-        <img src="https://ik.imagekit.io/ahmadrajaf/camp3/bank-kuy.png" alt="Bank Kuy Hero Image" style="width: 50%; height: auto; margin-bottom: 20px;">
         <h1>Welcome to Bank Kuy</h1>
         <p>Empowering UMKM with innovative financial solutions</p>
         <button onclick="scrollToSection('about')">Learn More</button>
@@ -28,12 +27,10 @@
         <h2>About Bank Kuy</h2>
         <div class="vision-mission">
             <div class="vision">
-                <img src="https://ik.imagekit.io/ahmadrajaf/camp3/bank.png" alt="Vision Image" style="width: 100%; height: auto; margin-bottom: 10px;">
                 <h3>Our Vision</h3>
                 <p>To be the leading bank that empowers UMKM across Indonesia, fostering economic growth and financial inclusion for all.</p>
             </div>
             <div class="mission">
-                <img src="https://ik.imagekit.io/ahmadrajaf/camp3/bank.png" alt="Mission Image" style="width: 100%; height: auto; margin-bottom: 10px;">
                 <h3>Our Mission</h3>
                 <p>Provide accessible, innovative, and reliable financial services tailored for UMKM, supporting their growth and success through technology and personalized support.</p>
             </div>
@@ -87,12 +84,17 @@
         <div id="chatbot-window">
             <div id="chatbot-header">
                 <span>Asisten Keuangan UMKM</span>
-                <button onclick="toggleChat()">×</button>
+                <div class="header-buttons">
+                    <button onclick="clearChatHistory()" title="Clear Chat History">🗑️</button>
+                    <button onclick="toggleChat()">×</button>
+                </div>
             </div>
             <div id="chatbot-messages"></div>
             <form id="chatbot-form">
-                <input type="text" id="chatbot-input" placeholder="Ketik pertanyaan Anda..." required>
-                <button type="submit">Kirim</button>
+                <div id="chatbot-input-container">
+                    <input type="text" id="chatbot-input" placeholder="Ketik pertanyaan Anda..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                    <button id="chatbot-send-btn">Kirim</button>
+                </div>
             </form>
         </div>
     </div>
@@ -101,6 +103,11 @@
         function toggleChat() {
             const window = document.getElementById('chatbot-window');
             window.style.display = window.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function clearChatHistory() {
+            const messagesDiv = document.getElementById('chatbot-messages');
+            messagesDiv.innerHTML = '';
         }
 
         document.getElementById('chatbot-form').addEventListener('submit', function(e) {
@@ -148,11 +155,43 @@
             });
         });
 
+        function parseMarkdown(text) {
+            // Convert markdown to HTML
+            let html = text;
+            
+            // Bold: **text** or __text__
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
+            
+            // Italic: *text* or _text_
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            html = html.replace(/_(.+?)_/g, '<em>$1</em>');
+            
+            // Line breaks
+            html = html.replace(/\n/g, '<br>');
+            
+            // Lists (simple implementation)
+            html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+            html = html.replace(/^• (.+)$/gm, '<li>$1</li>');
+            
+            // Wrap consecutive <li> tags in <ul>
+            html = html.replace(/(<li>.*<\/li>\s*)+/g, '<ul>$&</ul>');
+            
+            return html;
+        }
+
         function addMessage(text, sender) {
             const messagesDiv = document.getElementById('chatbot-messages');
             const messageDiv = document.createElement('div');
             messageDiv.className = 'chatbot-message ' + sender;
-            messageDiv.textContent = text;
+            
+            // For bot messages, parse markdown; for user messages, use plain text
+            if (sender.includes('bot')) {
+                messageDiv.innerHTML = parseMarkdown(text);
+            } else {
+                messageDiv.textContent = text;
+            }
+            
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }

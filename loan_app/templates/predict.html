@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 Loan Approval Prediction</title>
+    <title>Loan Prediction - Bank Kuy</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="predict-page">
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="{{ url_for('home') }}" class="nav-link">🏠 Home</a>
-        </div>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('home') }}#about">About Us</a></li>
+            <li><a href="{{ url_for('home') }}#services">Services</a></li>
+            <li><a href="{{ url_for('home') }}#contact">Contact</a></li>
+            <li><a href="/predict">Loan Predict</a></li>
+        </ul>
     </nav>
     <div class="container">
         <h1 style="color: rgb(18, 18, 18);">📊 Loan Approval Prediction</h1>
@@ -154,6 +158,130 @@
         </div>
         {% endif %}
     </div>
+    <!-- Floating Chatbot Widget -->
+    <div id="chatbot-widget">
+        <div id="chatbot-icon" onclick="toggleChat()">💬</div>
+        <div id="chatbot-window">
+            <div id="chatbot-header">
+                <span>Asisten Keuangan UMKM</span>
+                <div class="header-buttons">
+                    <button onclick="clearChatHistory()" title="Clear Chat History">🗑️</button>
+                    <button onclick="toggleChat()">×</button>
+                </div>
+            </div>
+            <div id="chatbot-messages"></div>
+            <form id="chatbot-form">
+                <div id="chatbot-input-container">
+                    <input type="text" id="chatbot-input" placeholder="Ketik pertanyaan Anda..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                    <button id="chatbot-send-btn">Kirim</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleChat() {
+            const window = document.getElementById('chatbot-window');
+            window.style.display = window.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function clearChatHistory() {
+            const messagesDiv = document.getElementById('chatbot-messages');
+            messagesDiv.innerHTML = '';
+        }
+
+        document.getElementById('chatbot-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const message = document.getElementById('chatbot-input').value;
+            if (message.trim() === '') return;
+
+            // Add user message
+            addMessage(message, 'user');
+
+            // Clear input
+            document.getElementById('chatbot-input').value = '';
+
+            // Show responding message
+            addMessage('Sedang merespons...', 'bot responding');
+
+            // Disable input while processing
+            document.getElementById('chatbot-input').disabled = true;
+            document.querySelector('#chatbot-form button').disabled = true;
+
+            // Send to server
+            fetch('/chatbot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'message=' + encodeURIComponent(message)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Remove responding message
+                removeRespondingMessage();
+                // Add bot response
+                addMessage(data.response, 'bot');
+            })
+            .catch(error => {
+                // Remove responding message
+                removeRespondingMessage();
+                addMessage('Terjadi error: ' + error.message, 'bot');
+            })
+            .finally(() => {
+                // Re-enable input
+                document.getElementById('chatbot-input').disabled = false;
+                document.querySelector('#chatbot-form button').disabled = false;
+            });
+        });
+
+        function parseMarkdown(text) {
+            // Convert markdown to HTML
+            let html = text;
+            
+            // Bold: **text** or __text__
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
+            
+            // Italic: *text* or _text_
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            html = html.replace(/_(.+?)_/g, '<em>$1</em>');
+            
+            // Line breaks
+            html = html.replace(/\n/g, '<br>');
+            
+            // Lists (simple implementation)
+            html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+            html = html.replace(/^• (.+)$/gm, '<li>$1</li>');
+            
+            // Wrap consecutive <li> tags in <ul>
+            html = html.replace(/(<li>.*<\/li>\s*)+/g, '<ul>$&</ul>');
+            
+            return html;
+        }
+
+        function addMessage(text, sender) {
+            const messagesDiv = document.getElementById('chatbot-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chatbot-message ' + sender;
+            
+            // For bot messages, parse markdown; for user messages, use plain text
+            if (sender.includes('bot')) {
+                messageDiv.innerHTML = parseMarkdown(text);
+            } else {
+                messageDiv.textContent = text;
+            }
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function removeRespondingMessage() {
+            const messagesDiv = document.getElementById('chatbot-messages');
+            const respondingMessages = messagesDiv.querySelectorAll('.responding');
+            respondingMessages.forEach(msg => msg.remove());
+        }
+    </script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
