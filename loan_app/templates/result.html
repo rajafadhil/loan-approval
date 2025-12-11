@@ -17,16 +17,16 @@
         </ul>
     </nav>
     <div class="container">
-        <h1>📊 Hasil Prediksi Pinjaman</h1>
+        <h1 style="color: #22bb33;">📊 Hasil Prediksi Pinjaman</h1>
 
         <div class="result-section">
             {% if prediction == "Approved" %}
-                <div class="success-result">
+                <div class="custom-result-box approved-box">
                     <h2>✅ Pinjaman Anda DISETUJUI!</h2>
                     <p>Keyakinan Prediksi: {{ confidence }}</p>
                 </div>
             {% else %}
-                <div class="error-result">
+                <div class="custom-result-box rejected-box">
                     <h2>❌ Pinjaman Anda DITOLAK</h2>
                     <p>Keyakinan Prediksi: {{ confidence }}</p>
                 </div>
