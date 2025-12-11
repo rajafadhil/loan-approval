@@ -1,3 +1,35 @@
+/* Custom result box for prediction output */
+.custom-result-box {
+    border-radius: 12px;
+    padding: 32px 24px 24px 24px;
+    margin: 32px 0 24px 0;
+    font-size: 1.2rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    font-weight: 500;
+    text-align: center;
+}
+.approved-box {
+    background: linear-gradient(135deg, #e0f7e9 0%, #b2f2d7 100%);
+    color: #14532d;
+    border: 2px solid #34c759;
+}
+.rejected-box {
+    background: linear-gradient(135deg, #ffeaea 0%, #ffd6d6 100%);
+    color: #b91c1c;
+    border: 2px solid #ff4d4f;
+}
+.custom-result-box h2 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 2rem;
+    font-weight: 700;
+    color: inherit;
+}
+.custom-result-box p {
+    margin: 0;
+    font-size: 1.1rem;
+    color: inherit;
+}
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;

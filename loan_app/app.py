@@ -5,10 +5,14 @@ import numpy as np
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
+import torch
+from transformers import pipeline
+from flask_cors import CORS
 
 # Load environment
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+HF_API_KEY = os.getenv("HF_API_KEY")
 
 if not GOOGLE_API_KEY:
     raise ValueError("GOOGLE_API_KEY tidak ditemukan! Pastikan file .env berisi kunci API.")
@@ -16,6 +20,7 @@ if not GOOGLE_API_KEY:
 genai.configure(api_key=GOOGLE_API_KEY)
 
 app = Flask(__name__)
+CORS(app)
 
 # === JANGAN DIUBAH: Bagian model ML ===
 model = joblib.load("best_loan_approval_model_reduced.pkl")
@@ -51,6 +56,10 @@ def call_gemini(prompt, system_instruction=SYSTEM_PROMPT):
     )
     response = model.generate_content(prompt)
     return response.text.strip()
+
+def call_local_model(prompt, max_length=256):
+    # Kembalikan ke Gemini (Google Generative AI)
+    return call_gemini(prompt)
 
 @app.route('/')
 def home():
@@ -138,6 +147,7 @@ def chatbot():
         user_message = request.form.get('message')
         if user_message:
             try:
+                # Kembali gunakan Gemini
                 response = call_gemini(user_message)
                 return jsonify({'response': response})
             except Exception as e:
