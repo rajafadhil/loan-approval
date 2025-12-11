@@ -34,10 +34,12 @@
         </div>
 
         <div class="action-buttons">
-            <a href="{{ url_for('predict') }}" class="btn btn-primary">Coba Kembali</a>
+            <a href="{{ url_for('predict') }}" class="custom-btn same-size-btn">
+                <span>Coba Kembali</span>
+            </a>
 
             {% if prediction == "Rejected" %}
-                <button onclick="askAI()" class="btn btn-secondary">Tanya AI</button>
+                <button onclick="askAI()" class="custom-btn same-size-btn">Tanya AI</button>
             {% endif %}
         </div>
 

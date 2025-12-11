@@ -1,3 +1,30 @@
+/* Custom button style for result page */
+.custom-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    background: linear-gradient(90deg, #22bb33 0%, #009688 100%);
+    color: #fff !important;
+    box-shadow: 0 2px 8px rgba(34,187,51,0.15);
+    border: none;
+    text-decoration: none;
+    transition: background 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    margin: 0 8px 0 0;
+}
+.custom-btn:hover, .custom-btn:focus {
+    background: linear-gradient(90deg, #009688 0%, #22bb33 100%);
+    box-shadow: 0 4px 16px rgba(34,187,51,0.18);
+    color: #fff !important;
+}
+.same-size-btn {
+    min-width: 160px;
+    justify-content: center;
+}
 /* Custom result box for prediction output */
 .custom-result-box {
     border-radius: 12px;
