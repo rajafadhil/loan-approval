@@ -1,0 +1,9 @@
+streamlit>=1.25.0
+python-dotenv
+langchain
+langchain-google-genai
+pandas
+scikit-learn
+xgboost
+numpy
+joblib
